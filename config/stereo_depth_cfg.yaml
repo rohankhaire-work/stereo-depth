@@ -1,0 +1,14 @@
+/**:
+  ros__parameters:
+    left_image_topic: "/kitti/camera/color/left/image_raw"
+    right_image_topic: "/kitti/camera/color/right/image_raw"
+    depth_weights_file: "/weights/adstereo_kitti.engine" # Path to depth estimation file
+    camera_frame: "cam2_link"
+    base_frame: "base_link"
+    baseline: 0.54
+    fx: 721.5377
+    fy: 721.5377
+    cx: 607.1928
+    cy: 185.2157
+    original_image_height: 375
+    original_image_width: 1242
