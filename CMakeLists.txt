@@ -6,7 +6,6 @@ set(CMAKE_CUDA_FLAGS "${CMAKE_CUDA_FLAGS} -diag-suppress=20012")
 set(CMAKE_CUDA_ARCHITECTURES 86)
 
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
-find_package(sgm REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(cv_bridge REQUIRED)
@@ -23,7 +22,7 @@ target_include_directories(stereo_depth PRIVATE include
                                             ${OpenCV_INCLUDE_DIRS}
                                             ${CUDAToolkit_INCLUDE_DIR} 
                                             ${TensorRT_INCLUDE_DIRS})
-ament_target_dependencies(stereo_depth rclcpp cv_bridge image_transport pcl_ros tf2_ros message_filters sgm)
+ament_target_dependencies(stereo_depth rclcpp cv_bridge image_transport pcl_ros tf2_ros message_filters)
 
 target_link_libraries(stereo_depth
     ${OpenCV_LIBS}

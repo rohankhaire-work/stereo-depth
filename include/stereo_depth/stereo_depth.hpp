@@ -1,10 +1,6 @@
 #ifndef STEREO_DEPTH_ESTIMATION__STEREO_DEPTH_ESTIMATION_HPP_
 #define STEREO_DEPTH_ESTIMATION__STEREO_DEPTH_ESTIMATION_HPP_
 
-#include <sgm/libsgm.h>
-#include <sgm/libsgm_wrapper.h>
-#include <sgm/sample_common.h>
-
 #include <NvInfer.h>
 #include <cuda_runtime_api.h>
 #include <opencv2/opencv.hpp>
@@ -18,18 +14,6 @@
 #include <iostream>
 #include <string>
 #include <vector>
-
-struct SGMParams
-{
-  int disp_size;
-  int P1;
-  int P2;
-  float uniqueness;
-  int num_paths;
-  int min_disp;
-  int LR_max_diff;
-  int census_type;
-};
 
 struct CAMParams
 {
@@ -63,7 +47,7 @@ public:
   void runInference(const cv::Mat &, const cv::Mat &);
 
   cv::Mat depth_img_;
-  cv::Mat disparity_img_;
+  cv::Mat depth_map_;
   sensor_msgs::msg::PointCloud2 depth_cloud_;
 
 private:
@@ -71,10 +55,11 @@ private:
   Logger gLogger_;
   std::vector<float> result_;
   double fx_, fy_, cx_, cy_, baseline_;
-  std::vector<float> depth_map_;
   CAMParams cam_params_;
   bool use_rgb_ = true;
   float scaled_fx_, scaled_fy_, scaled_cx_, scaled_cy_;
+  const double MAX_DEPTH = 80.0;
+  const double MIN_DEPTH = 0.5;
 
   // Buffers
   void *buffers_[4];

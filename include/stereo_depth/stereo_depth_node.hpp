@@ -49,8 +49,8 @@ private:
   rclcpp::TimerBase::SharedPtr timer_;
 
   // Publishers
+  image_transport::Publisher depth_img_viz_pub_;
   image_transport::Publisher depth_img_pub_;
-  image_transport::Publisher sgm_disparity_pub_;
   rclcpp::Publisher<sensor_msgs::msg::PointCloud2>::SharedPtr depth_cloud_pub_;
 
   // Callbacks

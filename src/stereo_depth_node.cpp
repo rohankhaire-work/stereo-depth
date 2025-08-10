@@ -38,8 +38,8 @@ StereoDepthNode::StereoDepthNode() : Node("stereo_depth_node")
   timer_ = this->create_wall_timer(std::chrono::milliseconds(50),
                                    std::bind(&StereoDepthNode::timerCallback, this));
 
+  depth_img_viz_pub_ = image_transport::create_publisher(this, "/stereo_depth_viz");
   depth_img_pub_ = image_transport::create_publisher(this, "/stereo_depth");
-  sgm_disparity_pub_ = image_transport::create_publisher(this, "/disparity_sgm");
   depth_cloud_pub_
     = create_publisher<sensor_msgs::msg::PointCloud2>("/stereo_depth_cloud", 10);
 
@@ -100,7 +100,7 @@ void StereoDepthNode::timerCallback()
 
   auto start_time = std::chrono::steady_clock::now();
   // Run Stereo depth estimation
-  // Calcualted Time is for SGM and NN computation
+  // Calcualted Time is for NN computation
   // and resizing
   stereodepth_->runInference(init_left_img_, init_right_img_);
 
@@ -111,8 +111,8 @@ void StereoDepthNode::timerCallback()
   RCLCPP_INFO(this->get_logger(), "Inference took %ld ms", duration_ms);
 
   // Publsuh depth image and depth cloud
-  publishImage(depth_img_pub_, stereodepth_->depth_img_, "rgb8");
-  publishImage(sgm_disparity_pub_, stereodepth_->disparity_img_, "mono8");
+  publishImage(depth_img_viz_pub_, stereodepth_->depth_img_, "rgb8");
+  publishImage(depth_img_pub_, stereodepth_->depth_map_, "32FC1");
   publishDepthCloud(depth_cloud_pub_);
 }
 

@@ -228,10 +228,13 @@ void StereoDepthEstimation::runInference(const cv::Mat &left, const cv::Mat &rig
   result_.assign(output_host_, output_host_ + output_size);
 
   // Compute depth map from inference disparity
-  computeDepthMap(depth_map_);
+  std::vector<float> depth_map_vec;
+  depth_map_vec.reserve(result_.size());
+  computeDepthMap(depth_map_vec);
 
   // Convert to cv::Mat
-  cv::Mat depth_map(resize_h_, resize_w_, CV_32FC1, depth_map_.data());
+  cv::Mat depth_map(resize_h_, resize_w_, CV_32FC1, depth_map_vec.data());
+  depth_map_ = depth_map.clone();
 
   // Compute depth image
   convertToDepthImg(depth_map, depth_img_);
@@ -264,9 +267,15 @@ void StereoDepthEstimation::computeDepthMap(std::vector<float> &depth_map)
 void StereoDepthEstimation::convertToDepthImg(const cv::Mat &depth_map,
                                               cv::Mat &depth_img)
 {
-  cv::Mat depth_vis;
-  depth_map.convertTo(depth_img, CV_8U);
-  cv::applyColorMap(depth_img, depth_img, cv::COLORMAP_JET);
+  // Clip depth to range
+  cv::Mat depth_clipped = depth_map.clone();
+  cv::threshold(depth_clipped, depth_clipped, MAX_DEPTH, MAX_DEPTH, cv::THRESH_TRUNC);
+  cv::threshold(depth_clipped, depth_clipped, MIN_DEPTH, MIN_DEPTH, cv::THRESH_TOZERO);
+
+  // Normalize to 0–255 for Canny
+  cv::Mat depth_8u;
+  cv::normalize(depth_clipped, depth_8u, 0, 255, cv::NORM_MINMAX, CV_8U);
+  cv::applyColorMap(depth_8u, depth_img, cv::COLORMAP_JET);
 }
 
 void StereoDepthEstimation::initializeDepthCloud()
